@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> 
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    
+    <!-- AJAX -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Ficheiro main.js -->
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    <title>Cartografia</title>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="py-5 text-center">
+            <!-- <img class="d-block mx-auto mb-4" src="../assets/brand/bootstrap-solid.svg" alt="" width="72" height="72"> -->
+            <h2>Projeto de Cartografia</h2>
+            <p class="lead">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
+        </div>
+        
+        
+        
+        <div class="row">
+            <div class="col-md-4 order-md-2 mb-4">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="text-muted">Resultados</span>
+                  <span class="badge badge-secondary badge-pill">3</span>
+                </h4>
+                <ul class="list-group mb-3" id="output">
+                </ul>
+          
+
+            </div>
+            <div class="col-md-8 order-md-1">
+                <h4 class="mb-3">Sistema de Coordenadas</h4>
+                <form id="form">
+            
+                    <div class="row mb-3">
+                        <div class="col-auto pb-4">
+                            <!-- Sistema de entrada -->
+                            <div class="form-floating">
+                                <select class="form-select" id="selectEntrada" aria-label="Floating label select example">
+                                    <option selected>Selecione um sistema</option>
+                                    <option value="1">ETRS89</option>
+                                    <option value="2">Datum Lisboa</option>
+                                    <option value="3">Datum 73</option>
+                                    <option value="4">ITRF 93</option> 
+                                </select>
+                                <label for="selectEntrada">Sistema de entrada</label>
+                            </div>
+                        </div>
+                        <div class="col-auto pb-4">
+                          <!-- Sistema de saida -->
+                            <div class="form-floating">
+                                <select class="form-select" id="selectSaida" aria-label="Floating label select example">
+                                    <option selected>Selecione um sistema</option>
+                                    <option value="1">ETRS89</option>
+                                    <option value="2">Datum Lisboa</option>
+                                    <option value="3">Datum 73</option>
+                                    <option value="4">ITRF 93</option> 
+                                </select>
+                                <label for="selectSaida">Sistema de saida</label>
+                            </div>
+                        </div>
+        
+                        <div class="col-auto" id="transform">
+                            <!-- Transformação -->
+                            <div class="form-floating" >
+                                <select class="form-select" id="selectTrans" aria-label="Floating label select example">
+                                    <option selected>Selecione a transformação</option>
+                                    <option value="1">Bursa-Wolf</option>
+                                    <option value="2">Molodenski</option>
+                                    <option value="3">Polinomial 2º grau</option>
+                                </select>
+                                <label for="selectTrans">Transformação</label>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    <hr class="mb-4">
+
+                    <h4 class="mb-3">Coordenadas</h4>
+                    <div class="row mb-3 pb-2">
+                        <div class="col-auto">
+                            <div class="form-floating">
+                              <select class="form-select" id="selectCoord">
+                                <option selected>Selecione as coordenadas de entrada e saida</option>
+                                <option value="1">Cartesianas/Cartesianas</option>
+                                <option value="2">Cartesianas/Geográficas</option>
+                                <option value="3">Cartesianas/Retangulares</option>
+                                <option value="4">Geográficas/Retangulares</option>
+                                <option value="5">Geográficas/Cartesianas</option>
+                                <option value="6">Geográficas/Geográficas</option>
+                                <option value="7">Retangulares/Geográficas</option>
+                                <option value="8">Retangulares/Cartesianas</option>
+                                <option value="9">Retangulares/Retangulares</option>
+                              </select>
+                              <label for="selectCoord">Coordenadas</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cartesianas/Geográficas (Opção 2)| Cartesianas/Retangulares (Opção 3) | Cartesianas/Cartesianas (Opção 1)-->
+                    <div class="row g-4 mb-3 inputCoord" id="inputCart">
+                        <div class="col-auto">
+                            <div class="form-floating">
+                              <input type="number" step="0.00001" class="form-control" id="x" name="x" placeholder="4 993 821.5571">
+                              <label for="x">X:</label>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-floating">
+                              <input type="number" class="form-control" step="0.00001" id="y" name="y" placeholder="-676 850.4038">
+                              <label for="y">Y:</label>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-floating">
+                              <input type="number" class="form-control" step="0.00001" id="z" name="z" placeholder="3 896 819.7516">
+                              <label for="z">Z:</label>
+                            </div>
+                        </div>
+                    </div>
+        
+                    
+        
+                    <!-- Geográficas/Retangulares (Opção 3) | Geográficas/Cartesianas (Opção 4) | Geográficas/Geográficas (Opção 5)-->
+                    <div class="row g-4 mb-3 inputCoord" id="inputGeo">
+                        <div class="col-auto">
+                            <div class="input-group">
+                                <span class="input-group-text">Latitude</span>
+                                <input type="number" aria-label="Graus" id="latGrau" name="latGrau" class="form-control">
+                                <input type="number" aria-label="Minutos" id="latMin" name="latMin" class="form-control">
+                                <input type="number" aria-label="Segundos" id="latSec" name="latSec" step="0.00001" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="input-group">
+                                <span class="input-group-text">Longitude</span>
+                                <input type="number" aria-label="Graus" id="longGrau" name="longGrau" class="form-control">
+                                <input type="number" aria-label="Minutos" id="longMin" name="longMin" class="form-control">
+                                <input type="number" aria-label="Segundos" id="longSec" name="longSec"  step="0.00001" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+        
+                    
+                    <!-- Retangulares/Geográficas (Opção 5)| Retangulares/Cartesianas (Opção 6) | Retangulares/Retangulares (Opção 9)-->
+                    <div class="row g-4 mb-3 inputCoord" id="inputRetan">
+                        <div class="col-auto">
+                            <div class="form-floating">
+                              <input type="number" step="0.00001" class="form-control" id="m" name="m" placeholder="4 993 821.5571">
+                              <label for="m">M:</label>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-floating">
+                              <input type="number" class="form-control" step="0.00001" id="p" name="p" placeholder="-676 850.4038">
+                              <label for="p">P:</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    <hr class="my-4">
+
+                    <div class="row g-4 mb-3 inputCoord" id="inputHFuso">  
+                        <div class="col-auto">
+                            <div class="form-floating">
+                              <input type="number" class="form-control" step="0.00001" id="h" name="h" placeholder="3 896 819.7516" disabled>
+                              <label for="h">Altitude:</label>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-floating">
+                              <input type="number" class="form-control" id="fuso" name="fuso" placeholder="25" disabled>
+                              <label for="fuso">Fuso:</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+
+                    <button class="btn btn-primary btn-lg btn-block" type="submit" name="button">Calcular</button>
+                    <!-- <button type="submit" name="button">Submit</button> -->
+                </form>
+            </div>
+        </div>
+
+        
+        
+        <!-- <div id="output"></div> -->
+    </div>
+
+    <footer class="my-5 pt-5 text-muted text-center text-small">
+        <p class="mb-1">&copy; 2021-2022 FCUL</p>
+    </footer>
+
+    
+</body>
+</html>
