@@ -110,7 +110,7 @@ class Digraph(object):
         """
         src = edge.get_source()
         dest = edge.get_destination()
-        if not(src in self.nodes and dest in self.nodes):
+        if not (src in self.nodes and dest in self.nodes):
             raise ValueError('Node not in graph')
         self.edges[src].append(dest)
 
@@ -143,15 +143,21 @@ class Graph(Digraph):
         Digraph.add_edge(self, rev)
 
 
-def printPath(path):
+def print_path(path):
     """
     Requires: path a list of nodes
     """
     result = ''
-    for i in range(len(path)):
-        result = result + str(path[i])
+    # for i in range(len(path)):
+    #     result = result + str(path[i])
+    #     if i != len(path) - 1:
+    #         result = result + '->'
+    # return result
+
+    for i, station in enumerate(path):
+        result += str(station)
         if i != len(path) - 1:
-            result = result + '->'
+            result += '->'
     return result
 
 
@@ -199,7 +205,7 @@ def path_generation(path):
     """
     generation = 97
     for node in path:
-        if(node.get_generation() > generation):
+        if (node.get_generation() > generation):
             generation = node.get_generation()
     return generation
 
@@ -213,7 +219,7 @@ def search(graph, start, end):
     shortest path from start to end in graph
     """
     time = 0
-    if(start.get_id() != end.get_id()):
+    if (start.get_id() != end.get_id()):
         time = DFS(graph, start, end, [], 0, 0)
         if time == 0:
             return start.get_name() + " and " + end.get_name() + " do not communicate"
@@ -229,9 +235,12 @@ def find_station(stations, name):
     Ensures:
     gives the name of the station and none when not found
     """
-    for i in range(len(stations)):
-        if(stations[i].get_name() == name):
-            return stations[i]
+    # for i in range(len(stations)):
+    #     if(stations[i].get_name() == name):
+    #         return stations[i]
+    for idx, station in enumerate(stations):
+        if station.get_name() == name:
+            return station
     return None
 
 
@@ -266,7 +275,7 @@ def main(args):
 
     for station in stations:
         for s in conns[aux]:
-            print(s)
+            # print(s)
             # por \r\n em mac
             pos = (int(s.replace(")\n", ""))) - 1
             g.add_edge(Edge(station, stations[int(pos)]))
@@ -285,8 +294,7 @@ def main(args):
         line = line.replace("\n", "")
         station_names = line.split(" ")
         stop = False
-        
-        
+
         station_a = find_station(stations, station_names[0])
         # print(station_a)
         if station_a is None:
@@ -328,7 +336,7 @@ def test_args(args):
     """
     if len(args) != 4:
         print("\nCommand not recognized!\nPlease use: \n     " +
-              "$ python relayStations.py <input file1> <input file2> <output file>")
+              "$ python relay_stations.py <input file1> <input file2> <output file>")
         return False
     return True
 
