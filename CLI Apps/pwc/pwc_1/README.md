@@ -1,45 +1,33 @@
 
-# PWC
+## Objective
 
-It is a software that allows to determine the transmission time of a signal from one station to another in a network using a depth first search approache.
+This version of `pwc` and `pwc_threads` uses processes/threads and communication between processes/threads.
 
+## Introduction
 
-## Functionality
+`pwc` `pwc_threads` counts, in parallel, the number of characters, words, and lines in multiple files, and indicates for each file the size of its longest line.
 
-The program receives a network of stations. It also receives two specific stations, A and B, from that network.
-The program delivers the shortest possible time (in milliseconds) that a signal takes to travel from one of these stations to the other.
+## Description
+### SYNOPSIS
+```bash
+  pwc [-c|-w|-l [-L]] [-p n] {files}
+  pwc_threads [-c|-w|-l [-L]] [-p n] {files}
+```
 
-### Input
+### Opcions 
 
-The program receives pairs of station names and a file containing the description of the (re)transmitter network, with an internal structure for storing similar information to that of the following fragmentary example:
+- `-c`: Option that allows obtaining the number of characters in a file.
+- `-w`: Option that allows obtaining the number of words in a file.
+- `-l`: Option that allows obtaining the number of lines in a file.
+- `-L`: Optional option that calculates the size of the longest line in the file. This option can only be combined with the -l option.
+- `-p n`: Optional option that sets the level of parallelization of the command by n (i.e., the number of processes/threads used for counting). By default, only one process should be used for counting.
 
-    #Id, Name, Power, Generation, Connected:
-    1, Baki, 24, 99, (22, 34, 2, 5)
-    2, Murai, 82, 98, (17, 13)
-    3, Nanbuko, 17, 98, (24, 5)
-    4, Sasume, 103, 97, (11)
-where the **Connected** field of a given line stores the IDs of the stations in direct contact with the station described in that line.
+Zero or more files can be given, on which the counting is performed. If no files are provided in the command line, they should be read from stdin.
 
-### Output
+Initially, the parent process should create the processes/threads defined by the parallelization level of the command (value n). These processes/threads count the characters, words, or lines of a file and write the results to stdout. They continue counting until it has been performed on all files. The counting results are written to stdout in a non-interleaved manner.
 
-The program produces:
+Finally, the parent process should write to stdout the total number of characters, words, or lines, according to the specified counting option.
 
-- *"X out of the network"* if X is not part of the network;
-- or *"A and B do not communicate"* if there is no signal transmission between A and B;
-- or a float indicating the shortest possible time, in milliseconds, that a signal takes to travel from the first of these stations to the other, otherwise.
-
-
-## General specification
-
-- A signal is transmitted between stations connected directly and transitively between stations in communication mediated by other stations.
-- Between two stations **A** and **B** connected indirectly through the mediation of other stations different from **A** and **B**, **B** receives a signal from **A** in **X** milliseconds, where **X** is the sum of the times of each connection between the various other stations involved.
-- Between two stations **A** and **B** connected indirectly, there may be more than one path through other stations that connects **A** and **B**: the goal is to consider the path that corresponds to the shortest possible time for the transmission of a signal between **A** and **B**.
-- Between two stations **A** and **B**, both with **99G**, connected directly, **B** receives a signal from **A** in **X** milliseconds, where **X** is obtained by the inverse of the power of **A**.
-- Between two stations **A** and **B**, in which at least one is with **98G**, connected directly, **B** receives a signal from **A** in **Y** milliseconds, where **Y** is obtained by double the inverse of the power of **A**.
-- Between two stations **A** and **B**, in which both are with **97G**, connected directly, **B** receives a signal from **A** in **Y** milliseconds, where **Y** is obtained by quadruple the inverse of the power of **A**.
-- A station **A** with **97G** communicates with another station **B** if **B**, and all intermediate stations, if any, are also with **97G**.
-- The direct relationships between stations in the network are symmetrical, i.e., if **B** is in a direct relationship with **A**, in the same way, **A** is in a direct relationship with **B** (even if only one of these two directions is recorded in the file with the network description).
-- Each of the stations has to be declared in the stations_network.txt file and is declared only once.
 ## Dependencies
 
 - Python 3.XX
