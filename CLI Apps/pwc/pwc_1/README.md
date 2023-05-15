@@ -42,15 +42,14 @@ Finally, the parent process should write to stdout the total number of character
 #### Go to the project directory
 
 ```bash
-  cd Python-Projects/CLI\Apps/relay_stations
+  cd Python-Projects/CLI\Apps/pwc/pwc_1
 ```
 
 #### Sofware execution
 
 ```bash
-  python relay_stations.py station_network.txt test_set.txt results_test_set.txt
+  python pwc.py -c -w -p 2 file2.txt file3.txt
+  python pwc_threads.py -c -w -p 2 file2.txt file3.txt
 ```
 
-- `station_network.txt` is a file with the network of stations in the format exemplified above;
-- `test_set.txt` is a file with a pair of station names per line, as in the following;
-- `results_test_set.txt` is the name of the file where the results for each pair in `test_set.txt` are written, in the respective order.
+
