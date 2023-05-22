@@ -8,8 +8,9 @@ On file pwc.py, the program is executed with processes.
 
 ### NAME
 
-`pwc` - print lines in given files matching the indicated text
-`hpwc` - read history of pgrep program execution
+`pwc` - print lines in given files matching the indicated text.
+
+`hpwc` - read history of pgrep program execution.
 
 ### DESCRIPTION
 
