@@ -8,13 +8,14 @@ This version of `pwc` and `pwc_threads` uses processes/threads and communication
 `pwc` `pwc_threads` counts, in parallel, the number of characters, words, and lines in multiple files, and indicates for each file the size of its longest line.
 
 ## Description
-### Synopsis
+
+### SYNOPSIS
 ```bash
   pwc [-c|-w|-l [-L]] [-p n] {files}
   pwc_threads [-c|-w|-l [-L]] [-p n] {files}
 ```
 
-### Opcions 
+### OPTIONS 
 
 - `-c`: Option that allows obtaining the number of characters in a file.
 - `-w`: Option that allows obtaining the number of words in a file.
