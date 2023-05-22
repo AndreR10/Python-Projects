@@ -10,13 +10,9 @@ On file pwc.py, the program is executed with processes.
 
 `pwc` - print lines in given files matching the indicated text.
 
-`hpwc` - read history of pgrep program execution.
-
 ### DESCRIPTION
 
 `pwc` counts caracters | words | lines of the given files.
-
-`hpwc` reads record of input files and presents information for a stdout.
 
 ### SYNOPSIS
 
