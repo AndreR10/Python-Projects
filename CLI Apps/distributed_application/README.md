@@ -1,0 +1,3 @@
+# Description
+
+The overall objective of the project is to implement a manager for simultaneous requests to resources and process these requests in mutual exclusion. Its purpose is to control access to a set of shared resources in a distributed system, where different clients may concurrently request access to the resources. A resource is exclusively locked by only one client but is available for locking up to a maximum of **k** locks. Once the allowed **k** locks are reached, the resource becomes inactive/unavailable for locking. The manager allows for **y** concurrently locked resources and will be implemented in a Python server.
