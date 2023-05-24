@@ -3,6 +3,8 @@
 
 .vscode
 
+__pycache__
+
 # Python virtual enviroments
 pwc_venv/
 venv/

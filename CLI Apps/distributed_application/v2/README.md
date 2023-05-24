@@ -19,7 +19,6 @@ In this version 2 the communication is serialized, and the messages exchanged be
 
 ```bash
 python lock_server.py <port> <num resources> <num lock per resources> <num resource locked at the same time> <time limit>
-
 ```
 
 The server should receive the following parameters through the command line, in the presented order:
