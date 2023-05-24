@@ -4,7 +4,7 @@ The overall objective of the project is to implement a web service to manage a s
 
 ## Database Schema
 
-![Database schema](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![Database schema]([https://via.placeholder.com/468x300?text=App+Screenshot+Here](https://github.com/AndreR10/Python-Projects/blob/main/Web%20Apps/Flask/distributed_application/v1/database_schema.png))
 
 The intended application has an initialization routine that checks if the database already exists. If it doesn't exist, it creastes and initializes with the provided code (table creation and insertion of records into the rates table).
 
