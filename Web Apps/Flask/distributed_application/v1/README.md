@@ -14,8 +14,10 @@ The web service is implemented using the Flask framework, and the REST API will 
 
 1 - /users
 For operations related to users.
+
 2 - /bands
 For operations related to bands.
+
 3 - /albums
 For operations related to albums.
 
