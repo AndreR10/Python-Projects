@@ -10,3 +10,5 @@ pwc_venv/
 venv/
 .env
 env/
+
+*.code-workspace
