@@ -1,23 +1,26 @@
-__author__ = "André Ramos, 53299"
-__copyright__ = "Programação II, LTI, DI/FC/UL, 2021"
+__author__ = "André Ramos"
 __email__ = "fc53299@alunos.fc.ul.pt"
 
 
-def ler_palavras(file):
-    """Lê as linhas num dado ficheiro
+import sys
+
+
+def read_words(file):
+    """
+    Reads the lines of a given file
 
     Args:
-        file (str): Nome do ficheiro a ser lido
+        file (str): Name of the file to read
 
     Returns:
-        set(str): Conjunto de palavras presentes no ficheiro
+        set(str): Set of words in the file
     """
     words = set()
     with open(file, 'r', encoding='utf8') as f:
         lines = f.read().splitlines()
-        print(lines)
+     
         for line in lines:
-            print(line)
+
             words_line = line.split()
             for word in words_line:
                 if word not in words:
@@ -25,21 +28,19 @@ def ler_palavras(file):
         return words
 
 
-def encontrar_ocorrencias(search_file, words_set):
-    """Contagem das palavras e 
-    linhas onde se encontram presentes essas palavras
+def find_occurrences(search_file, words_set):
+    """
+    Count the occurrences of words and identify the lines where the words in the word_set are present.
 
     Args:
-        search_file (str): Nome do ficheiro a ser lido
-        words_set (set()): Conjunto de palavras a serem encontradas
+        search_file (str): The name of the file to be searched.
+        words_set (set): A set of words to be counted.
 
     Returns:
-        dict: Devolve diciononário em que a key é a palavra
-        e valor é um tuplo com o numero de vezes que essa palavra aparece e as linhas 
-        onde aparece
+        dict: A dictionary where each key represents a word from the word_set, and its corresponding value is a tuple with the count of occurrences of that word and the lines where it appears.
     """
     results = {}
-    search_words = ler_palavras(words_set)
+    search_words = read_words(words_set)
 
     for word in search_words:
         with open(search_file, 'r', encoding='utf8') as f:
@@ -60,4 +61,14 @@ def encontrar_ocorrencias(search_file, words_set):
     return results
 
 
-print(encontrar_ocorrencias('turing.txt', 'palavras.txt'))
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print("Usage: python find_occurrences.py <search_file> <words_file>")
+        sys.exit(1)
+
+    search_file = sys.argv[1]
+    words_file = sys.argv[2]
+
+ 
+    occurrences = find_occurrences(search_file, words_file)
+    print(occurrences)
