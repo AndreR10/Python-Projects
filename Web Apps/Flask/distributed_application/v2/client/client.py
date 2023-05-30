@@ -4,57 +4,28 @@ Aplicacoes Distribuidas - client.py
 """
 
 import sys
-import os
-import socket
-import ssl
 import json
 import requests
 
-from requests_oauthlib import OAuth2Session
 
-
-# Informação da aplicação registada no GitHub
-client_id = "cb71a9ecf3d04c339c6e5cae21289aee"
-client_secret = "1a2f46975a1947caa8b9d97af58b9216"
-# Informação sobre a Authorization server
-# authorization_base_url = "hhttps://accounts.spotify.com/authorize"
-access_token_url = "https://accounts.spotify.com/api/token"
-# redirect_uri = "http://localhost:5001/callback"
-
-
-# # Authenticate and authorize the client with Spotify using OAuth2
-# oauth = OAuth2Session(client_id, redirect_uri=redirect_uri)
-# authorization_url, state = oauth.authorization_url(authorization_base_url)
-# print(f"Please visit the following URL to authorize the client: {authorization_url}")
-
-# # Handle the authorization callback
-# authorization_response = input("Enter the full callback URL: ")
-# token = oauth.fetch_token(
-#     token_url,
-#     client_secret=client_secret,
-#     authorization_response=authorization_response,
-# )
-
-s = requests.Session()
+session = requests.Session()
 certs = ("../certs/client.crt", "../certs/CA.key")
 verify = "../certs/CA.crt"
 flag = True
 
-# Create an OAuth2 session
-spotify = OAuth2Session(client_id)
 
-# Fetch the access token from the server
-token = spotify.fetch_token(
-    access_token_url,
-    verify=verify,
-    authorization_response="http://localhost:5000/callback",
-    client_secret=client_secret,  # Replace with your Spotify API client secret
-)
+# Client configuration
+client_id = ""
+client_secret = ""
+# Informação sobre a Authorization server
+authorization_url = "http://localhost:5000/login"
 
-# Store the access token for future use
-access_token = token["access_token"]
-
-headers = {"Authorization": f"Bearer {access_token}"}
+# Make a request to the server to initiate OAuth2 flow and retrieve the access token
+response = session.get(authorization_url, verify=verify)
+print(response)
+access_token = response.json()["access_token"]
+session.headers["Authorization"] = f"Bearer {access_token}"
+# headers = {"Authorization": f"Bearer {access_token}"}
 
 while flag:
     try:
@@ -80,7 +51,7 @@ while flag:
                     url = "https://localhost:5000/utilizadores"
                     data = json.dumps(utilizadores)
                     print("Sent: {}".format(data))
-                    response = spotify.post(url, data=data, verify=verify, cert=certs)
+                    response = session.post(url, data=data, verify=verify, cert=certs)
                     print("URL: {}".format(response.url))
                     print("STATUS CODE: {}".format(response.status_code))
                     print("RESULT: User {}".format(json.loads(response.content)))
@@ -104,7 +75,7 @@ while flag:
                         url = "https://localhost:5000/bandas"
                         data = json.dumps(bandas)
                         print("Sent: {}".format(data))
-                        response = spotify.post(
+                        response = session.post(
                             url, data=data, verify=verify, cert=certs
                         )
                         print("URL: {}".format(response.url))
@@ -126,7 +97,7 @@ while flag:
                     url = "https://localhost:5000/albuns"
                     data = json.dumps(albuns)
                     print("Sent: {}".format(data))
-                    response = spotify.post(url, data=data, verify=verify, cert=certs)
+                    response = session.post(url, data=data, verify=verify, cert=certs)
                     print("URL: {}".format(response.url))
                     print("STATUS CODE: {}".format(response.status_code))
                     print("RESULT: Album {}".format(json.loads(response.content)))
@@ -143,7 +114,7 @@ while flag:
                         url = "https://localhost:5000/utilizadores/rate"
                         data = json.dumps(rate)
                         print("Sent: {}".format(data))
-                        response = spotify.post(
+                        response = session.post(
                             url, data=data, verify=verify, cert=certs
                         )
                         print("URL: {}".format(response.url))
@@ -172,15 +143,15 @@ while flag:
 
                     # SHOW USER
                     if command[0].upper() == "SHOW":
-                        response = spotify.get(
-                            url, data=data, verify=verify, cert=certs, headers=headers
+                        response = session.get(
+                            url, data=data, verify=verify, cert=certs
                         )
                         print("URL: {}".format(response.url))
                         print("STATUS CODE: {}".format(response.status_code))
                         print("RESULT: User -> %s" % json.loads(response.content))
                     # REMOVE USER
                     else:
-                        response = spotify.delete(url, data=data)
+                        response = session.delete(url, data=data)
                         print("URL: {}".format(response.url))
                         print("STATUS CODE: {}".format(response.status_code))
                         print("RESULT: User -> %s" % json.loads(response.content))
@@ -193,7 +164,7 @@ while flag:
 
                     # SHOW BANDA
                     if command[0].upper() == "SHOW":
-                        response = spotify.get(
+                        response = session.get(
                             url,
                             data=data,
                             verify=verify,
@@ -205,7 +176,7 @@ while flag:
 
                     # REMOVE BANDA
                     else:
-                        response = spotify.delete(
+                        response = session.delete(
                             url, data=data, verify=verify, cert=certs
                         )
                         print("URL: {}".format(response.url))
@@ -220,7 +191,7 @@ while flag:
 
                     # SHOW ALBUM
                     if command[0].upper() == "SHOW":
-                        response = spotify.get(
+                        response = session.get(
                             url, data=data, verify=verify, cert=certs
                         )
                         print("URL: {}".format(response.url))
@@ -229,7 +200,7 @@ while flag:
 
                     # REMOVE ALBUM
                     else:
-                        response = spotify.delete(
+                        response = session.delete(
                             url, data=data, verify=verify, cert=certs
                         )
                         print("URL: {}".format(response.url))
@@ -242,7 +213,7 @@ while flag:
 
                         # SHOW ALL USERS
                         if command[0].upper() == "SHOW":
-                            response = spotify.get(url, verify=verify, cert=certs)
+                            response = session.get(url, verify=verify, cert=certs)
                             print("URL: {}".format(response.url))
                             print("STATUS CODE: {}".format(response.status_code))
                             print(
@@ -254,7 +225,7 @@ while flag:
 
                         # REMOVE ALL USERS
                         else:
-                            response = spotify.delete(url, verify=verify, cert=certs)
+                            response = session.delete(url, verify=verify, cert=certs)
                             print("URL: {}".format(response.url))
                             print("STATUS CODE: {}".format(response.status_code))
                             print(
@@ -269,7 +240,7 @@ while flag:
 
                         # SHOW ALL BANDAS
                         if command[0].upper() == "SHOW":
-                            response = spotify.get(url, verify=verify, cert=certs)
+                            response = session.get(url, verify=verify, cert=certs)
                             print("URL: {}".format(response.url))
                             print("STATUS CODE: {}".format(response.status_code))
                             print(
@@ -281,7 +252,7 @@ while flag:
 
                         # REMOVE ALL BANDAS
                         else:
-                            response = spotify.delete(url, verify=verify, cert=certs)
+                            response = session.delete(url, verify=verify, cert=certs)
                             print("URL: {}".format(response.url))
                             print("STATUS CODE: {}".format(response.status_code))
                             print(
@@ -296,7 +267,7 @@ while flag:
 
                         # SHOW ALL ALBUNS
                         if command[0].upper() == "SHOW":
-                            response = spotify.get(url, verify=verify, cert=certs)
+                            response = session.get(url, verify=verify, cert=certs)
                             print("URL: {}".format(response.url))
                             print("STATUS CODE: {}".format(response.status_code))
                             print(
@@ -308,7 +279,7 @@ while flag:
 
                         # REMOVE ALL ALBUNS
                         else:
-                            response = spotify.delete(url, verify=verify, cert=certs)
+                            response = session.delete(url, verify=verify, cert=certs)
                             print("URL: {}".format(response.url))
                             print("STATUS CODE: {}".format(response.status_code))
                             print(
@@ -325,7 +296,7 @@ while flag:
                         print("Sent: {}".format(data))
 
                         if command[0].upper() == "SHOW":
-                            response = spotify.get(
+                            response = session.get(
                                 url, data=data, verify=verify, cert=certs
                             )
                             print("URL: {}".format(response.url))
@@ -337,7 +308,7 @@ while flag:
                             )
 
                         else:
-                            response = spotify.delete(
+                            response = session.delete(
                                 url, data=data, verify=verify, cert=certs
                             )
                             print("URL: {}".format(response.url))
@@ -358,7 +329,7 @@ while flag:
                         print("Sent: {}".format(data))
 
                         if command[0].upper() == "SHOW":
-                            response = spotify.get(
+                            response = session.get(
                                 url, data=data, verify=verify, cert=certs
                             )
                             print("URL: {}".format(response.url))
@@ -370,7 +341,7 @@ while flag:
                             )
 
                         else:
-                            response = spotify.delete(
+                            response = session.delete(
                                 url, data=data, verify=verify, cert=certs
                             )
                             print("URL: {}".format(response.url))
@@ -389,7 +360,7 @@ while flag:
                         print("Sent: {}".format(data))
 
                         if command[0].upper() == "SHOW":
-                            response = spotify.get(
+                            response = session.get(
                                 url, data=data, verify=verify, cert=certs
                             )
                             print("URL: {}".format(response.url))
@@ -401,7 +372,7 @@ while flag:
                             )
 
                         else:
-                            response = spotify.delete(
+                            response = session.delete(
                                 url, data=data, verify=verify, cert=certs
                             )
                             print("URL: {}".format(response.url))
@@ -430,7 +401,7 @@ while flag:
                 url = "https://localhost:5000/albuns"
                 data = json.dumps(album)
                 print("Sent {}".format(data))
-                response = spotify.put(url, data=data, verify=verify, cert=certs)
+                response = session.put(url, data=data, verify=verify, cert=certs)
                 print("URL: {}".format(response.url))
                 print("STATUS CODE: {}".format(response.status_code))
                 print("RESULT: {}".format(response.content))
@@ -440,7 +411,7 @@ while flag:
                 url = "https://localhost:5000/utilizadores"
                 data = json.dumps(utilizador)
                 print("Sent {}".format(data))
-                response = spotify.put(url, data=data, verify=verify, cert=certs)
+                response = session.put(url, data=data, verify=verify, cert=certs)
                 print("URL: {}".format(response.url))
                 print("STATUS CODE: {}".format(response.status_code))
                 print("RESULT: {}".format(response.content))

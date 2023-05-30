@@ -9,12 +9,12 @@ import json
 from os.path import isfile
 
 
-from flask import Flask, request, make_response, g, redirect, session
+from flask import Flask, request, make_response, g, redirect, session, jsonify
 from requests_oauthlib import OAuth2Session
 
 
 app = Flask(__name__)
-app.secret_key = "adwddcdc"
+
 
 # Create an SSL context
 context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
@@ -25,11 +25,11 @@ context.load_verify_locations = "../certs/"
 
 # OAuth2 configuration
 # Spotify API client ID
-client_id = "cb71a9ecf3d04c339c6e5cae21289aee"
+client_id = ""
 # Spotify API client secret
-client_secret = "1a2f46975a1947caa8b9d97af58b9216"
+client_secret = ""
 
-redirect_uri = "http://localhost:5001/callback"
+redirect_uri = "http://localhost:5000/callback"
 
 
 def connect_db():
@@ -86,26 +86,6 @@ with app.app_context():
     connect_db()
 
 
-# @app.route("/")
-# def login():
-#     github = OAuth2Session(client_id)
-
-#     authorization_url, state = github.authorization_url(authorization_base_url)
-#     # State is used to prevent CSRF, keep this for later.
-#     session['oauth_state'] = state
-#     return redirect(authorization_url)
-
-
-# @app.route("/callback", methods=["GET"])
-# def callback():
-#     github = OAuth2Session(client_id, state=session['oauth_state'])
-#     token = github.fetch_token(token_url,
-#                                client_secret=client_secret,
-#                                authorization_response=request.url)
-#     session['oauth_token'] = token
-#     return redirect('.profile')
-
-
 @app.route("/")
 def index():
     return "Hello, secure world!"
@@ -137,10 +117,7 @@ def callback():
         authorization_response=request.url,
     )
 
-    # Store the access token in session or database for future use
-    session["access_token"] = token
-
-    return redirect("http://localhost:5001/")
+    return jsonify(token)
 
 
 @app.route("/utilizadores", methods=["POST"])
