@@ -5,7 +5,8 @@
 # 53325 Manuel Machado
 
 import sys
-
+import streamlit as st
+import ast
 
 class Node(object):
     def __init__(self, id, name, power, generation):
@@ -232,16 +233,22 @@ def find_station(stations, name):
     """
     
     for idx, station in enumerate(stations):
-        print("Station Name: ", len(station.get_name()))
+        print("-----")
+        
         print("Station Name: ", station.get_name())
+        print("Station Len: ", len(station.get_name()))
+
         print("Name: ", name)
         print("Name: ", len(name))
+       
         if station.get_name() == name:
+            print("Found Station: ", station.get_name())
             return station
+    print("Station Not Found")
     return None
 
 
-def main(args):
+def main():
     '''
     Main function that receives args as the files given in the shell to iniciate program operation
     Requires:
@@ -250,104 +257,112 @@ def main(args):
     Creates the output file with the stations time connections
     '''
 
+    st.title("Relay Stations Project")
+
+
+    stations_file = st.file_uploader("Upload stations network file", type="txt")
+
+    
     stations = []
     conns = []
+    
+    if stations_file is not None:
+        data_rows = []
+        # print(stations_file)
+        stations_file_contents = stations_file.read().decode("utf-8")
+        for line in stations_file_contents.split("\n"):
+            if line and line[0] == "#":
+                column_names = line[1:].split(', ')
+                print(column_names)
+            if line and line[0] != "#":
+                
+                # print(line)
+                station_info = line.split(",")
+                data_rows.append(station_info)
 
-    file_in = open(args[1], "r")
-    for line in file_in:
-        if (line[0] != "#"):
-            station_info = line.split(", ")
-            stations.append(Node(int(station_info[0]),
-                                 station_info[1],
-                                 int(station_info[2]),
-                                 int(station_info[3])))
-            conns.append(line.split("(")[1].split(", "))
+                stations.append(Node(int(station_info[0]),
+                                    station_info[1].strip(),
+                                    int(station_info[2]),
+                                    int(station_info[3])))
+                # conns.append(line.split("(")[1].split(", "))
+                # print(station_info)
+                tuple_str = station_info[4:]
+                # print(tuple_str)
+                conns_tuple = [int(val.strip("(')\r ")) for val in tuple_str]
+                # print(conns_tuple)
+                conns.append(conns_tuple)
+        
+        print(data_rows)
 
-    g = Digraph()
+        # Display the column names and data in a table        
+        st.table([column_names] + data_rows)
 
-    for station in stations:
-        g.add_node(station)
+        g = Digraph()
 
-    aux = 0
+        for station in stations:
+            g.add_node(station)
 
-    for station in stations:
-        # print(conns)
-        for s in conns[aux]:
+        aux = 0
+
+        for station in stations:
+            # print(stations)
+            # print(conns)
             # print(aux)
-            # print(s)
-            pos = (int(s.replace(")\n", ""))) - 1
-            # print(pos)
-            g.add_edge(Edge(station, stations[int(pos)]))
-        aux += 1
-    file_in.close()
+            for s in conns[aux]:
+                # print(s)
+                pos = s - 1
+                # print(pos)
+                g.add_edge(Edge(station, stations[pos]))
+            aux += 1
+    
+    else:
+        st.write("Wrong files were provided")
 
-    file_in = open(args[2], "r")
-    max_test = len(file_in.readlines())
-    file_in.close()
+    test_file = st.file_uploader("Upload test file", type="txt")
 
-    file_in = open(args[2], "r")
-    file_out = open(args[3], "w")
-    print("Stations:")
-    print(stations)
-    count = 0
-    for line in file_in:
-        line = line.replace("\n", "")
-        print("Line:")
-        print(line)
-        station_names = line.split(" ")
-        print("Station Names:")
-        print(station_names)
-        stop = False
+    if test_file is not None:
+        
+        test_file_contents = test_file.read().decode("utf-8")
+        results = []
+        count = 0
+        # print("Stations:")
+        # print(stations)
+        for line in test_file_contents.split("\n"):
+            # print("Line:")
+            # print(line)
+            line = line.replace("\n", "")
+            station_names = line.split(" ")
+            # print("Station Names:")
+            # print(station_names)
+            stop = False
 
-        station_a = find_station(stations, station_names[0])
-        # print(station_a)
-        if station_a is None:
-            file_out.write(station_names[0] + " out of the network\n")
-            stop = True
+            station_a = find_station(stations, station_names[0])
+            # print(station_a)
 
-        station_b = find_station(stations, station_names[1])
-        # print(station_b)
-        if station_b is None:
-            file_out.write(station_names[1] + " out of the network\n")
-            stop = True
+            if station_a is None:
+                st.write(station_names[0] + " out of the network\n")
+                results.append(station_names[0] + " out of the network\n")
+                stop = True
 
-        # if station_a.getId() == station_b.getId():
-        #     file_out.write("Trying to connect same station (" +
-        #                    station_a.getName() + ", " + station_b.getName() + ")\n")
-        #     stop = True
-
-        if not stop:
-            file_out.write(str(search(g, station_a, station_b)) + "\n")
-
-        count += 1
-        percentage = round(count * 100 / max_test, 1)
-        sys.stdout.write("\r     Progress: " +
-                         str(percentage) + "%     |     ")
-        sys.stdout.write("Tested: " + str(count) + " of " +
-                         str(max_test) + " connections!")
-        sys.stdout.flush()
-
-    sys.stdout.write("\n")
-
-    file_in.close()
-    file_out.close()
+            station_b = find_station(stations, station_names[1])
+    
+            if station_b is None:
+                st.write(station_names[1] + " out of the network\n")
+                results.append(station_names[1] + " out of the network\n")
+                stop = True
 
 
-def test_args(args):
-    """
-    Checks to see if the num of the files given to initiate the program are the required
+            if not stop:
+                st.write(str(search(g, station_a, station_b)) + "\n")
+                results.append(str(search(g, station_a, station_b)) + "\n")
 
-    """
-    if len(args) != 4:
-        print("\nCommand not recognized!\nPlease use: \n     " +
-              "$ python relay_stations.py <input file1> <input file2> <output file>")
-        return False
-    return True
+            count += 1
+
+        print(results)
+    else:
+        st.write("Wrong files were provided")
+    
 
 
-if test_args(sys.argv):
-    print("\n##########################  Relay Stations  ############################")
-    print("\nRelayStations is running...\n")
-    main(sys.argv)
-    print("\n\nProgram has finished!")
-    print("##########################################################################")
+if __name__ == "__main__":
+    main()
