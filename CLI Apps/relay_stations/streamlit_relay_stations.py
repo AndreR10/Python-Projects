@@ -218,9 +218,10 @@ def search(graph, start, end):
     if (start.get_id() != end.get_id()):
         time = DFS(graph, start, end, [], 0, 0)
         if time == 0:
-            return start.get_name() + " and " + end.get_name() + " do not communicate"
-
-    return time
+            return "{} <-> {} do not communicate".format(start.get_name(),  end.get_name())
+        else:
+            return "{} <-> {} have communicate  in {}s".format(start.get_name(),  end.get_name(), time)
+    
 
 
 def find_station(stations, name):
@@ -233,18 +234,18 @@ def find_station(stations, name):
     """
     
     for idx, station in enumerate(stations):
-        print("-----")
+        # print("-----")
         
-        print("Station Name: ", station.get_name())
-        print("Station Len: ", len(station.get_name()))
+        # print("Station Name: ", station.get_name())
+        # print("Station Len: ", len(station.get_name()))
 
-        print("Name: ", name)
-        print("Name: ", len(name))
+        # print("Name: ", name)
+        # print("Name: ", len(name))
        
         if station.get_name() == name:
-            print("Found Station: ", station.get_name())
+            # print("Found Station: ", station.get_name())
             return station
-    print("Station Not Found")
+    # print("Station Not Found")
     return None
 
 
@@ -273,27 +274,42 @@ def main():
         for line in stations_file_contents.split("\n"):
             if line and line[0] == "#":
                 column_names = line[1:].split(', ')
-                print(column_names)
+                # print(column_names)
             if line and line[0] != "#":
                 
                 # print(line)
-                station_info = line.split(",")
-                data_rows.append(station_info)
+                station_info = line.split(", ")
+                row = station_info[:4]
+                
+                # print(row)
+               
 
                 stations.append(Node(int(station_info[0]),
                                     station_info[1].strip(),
                                     int(station_info[2]),
                                     int(station_info[3])))
-                # conns.append(line.split("(")[1].split(", "))
+                
                 # print(station_info)
                 tuple_str = station_info[4:]
                 # print(tuple_str)
                 conns_tuple = [int(val.strip("(')\r ")) for val in tuple_str]
                 # print(conns_tuple)
+
+                # Convert the integers to strings
+                str_list = [str(num) for num in conns_tuple]
+
+                # Join the strings with commas
+                result_string = ', '.join(str_list)
+          
+                row.append(result_string)
+
+                data_rows.append(row)
+
                 conns.append(conns_tuple)
         
-        print(data_rows)
+        # print(data_rows)
 
+        st.subheader("Stations list")
         # Display the column names and data in a table        
         st.table([column_names] + data_rows)
 
@@ -340,25 +356,25 @@ def main():
             # print(station_a)
 
             if station_a is None:
-                st.write(station_names[0] + " out of the network\n")
+                # st.write(station_names[0] + " out of the network\n")
                 results.append(station_names[0] + " out of the network\n")
                 stop = True
 
             station_b = find_station(stations, station_names[1])
     
             if station_b is None:
-                st.write(station_names[1] + " out of the network\n")
+                # st.write(station_names[1] + " out of the network\n")
                 results.append(station_names[1] + " out of the network\n")
                 stop = True
 
 
             if not stop:
-                st.write(str(search(g, station_a, station_b)) + "\n")
+                # st.write(str(search(g, station_a, station_b)) + "\n")
                 results.append(str(search(g, station_a, station_b)) + "\n")
 
             count += 1
 
-        print(results)
+        # print(results)
     else:
         st.write("Wrong files were provided")
     
