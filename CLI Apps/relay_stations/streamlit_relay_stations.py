@@ -7,6 +7,7 @@
 import sys
 import streamlit as st
 import ast
+import time
 
 class Node(object):
     def __init__(self, id, name, power, generation):
@@ -218,9 +219,9 @@ def search(graph, start, end):
     if (start.get_id() != end.get_id()):
         time = DFS(graph, start, end, [], 0, 0)
         if time == 0:
-            return "{} <-> {} do not communicate".format(start.get_name(),  end.get_name())
+            return "{} <-> {} do not communicate \n".format(start.get_name(),  end.get_name())
         else:
-            return "{} <-> {} have communicate  in {}s".format(start.get_name(),  end.get_name(), time)
+            return "{} <-> {} have communicate  in {}s \n".format(start.get_name(),  end.get_name(), time)
     
 
 
@@ -234,18 +235,11 @@ def find_station(stations, name):
     """
     
     for idx, station in enumerate(stations):
-        # print("-----")
-        
-        # print("Station Name: ", station.get_name())
-        # print("Station Len: ", len(station.get_name()))
-
-        # print("Name: ", name)
-        # print("Name: ", len(name))
        
         if station.get_name() == name:
-            # print("Found Station: ", station.get_name())
+            
             return station
-    # print("Station Not Found")
+   
     return None
 
 
@@ -269,31 +263,27 @@ def main():
     
     if stations_file is not None:
         data_rows = []
-        # print(stations_file)
+   
         stations_file_contents = stations_file.read().decode("utf-8")
         for line in stations_file_contents.split("\n"):
             if line and line[0] == "#":
                 column_names = line[1:].split(', ')
-                # print(column_names)
+          
             if line and line[0] != "#":
                 
-                # print(line)
+               
                 station_info = line.split(", ")
                 row = station_info[:4]
-                
-                # print(row)
-               
-
+            
                 stations.append(Node(int(station_info[0]),
                                     station_info[1].strip(),
                                     int(station_info[2]),
                                     int(station_info[3])))
                 
-                # print(station_info)
+       
                 tuple_str = station_info[4:]
-                # print(tuple_str)
+           
                 conns_tuple = [int(val.strip("(')\r ")) for val in tuple_str]
-                # print(conns_tuple)
 
                 # Convert the integers to strings
                 str_list = [str(num) for num in conns_tuple]
@@ -307,8 +297,7 @@ def main():
 
                 conns.append(conns_tuple)
         
-        # print(data_rows)
-
+      
         st.subheader("Stations list")
         # Display the column names and data in a table        
         st.table([column_names] + data_rows)
@@ -321,18 +310,16 @@ def main():
         aux = 0
 
         for station in stations:
-            # print(stations)
-            # print(conns)
-            # print(aux)
+            
             for s in conns[aux]:
-                # print(s)
+           
                 pos = s - 1
-                # print(pos)
+               
                 g.add_edge(Edge(station, stations[pos]))
             aux += 1
     
     else:
-        st.write("Wrong files were provided")
+        st.text("Please provide the needed files.")
 
     test_file = st.file_uploader("Upload test file", type="txt")
 
@@ -341,42 +328,46 @@ def main():
         test_file_contents = test_file.read().decode("utf-8")
         results = []
         count = 0
-        # print("Stations:")
-        # print(stations)
+        max_test = len(test_file_contents.split("\n"))
+
+        progress_text = "Operation in progress. Please wait."
+        my_bar = st.progress(0, text=progress_text)
         for line in test_file_contents.split("\n"):
-            # print("Line:")
-            # print(line)
+          
             line = line.replace("\n", "")
             station_names = line.split(" ")
-            # print("Station Names:")
-            # print(station_names)
+
             stop = False
 
             station_a = find_station(stations, station_names[0])
-            # print(station_a)
 
             if station_a is None:
-                # st.write(station_names[0] + " out of the network\n")
+               
                 results.append(station_names[0] + " out of the network\n")
                 stop = True
 
             station_b = find_station(stations, station_names[1])
     
             if station_b is None:
-                # st.write(station_names[1] + " out of the network\n")
+              
                 results.append(station_names[1] + " out of the network\n")
                 stop = True
 
 
             if not stop:
-                # st.write(str(search(g, station_a, station_b)) + "\n")
+                
                 results.append(str(search(g, station_a, station_b)) + "\n")
-
+          
             count += 1
-
-        # print(results)
+            percentage = int(count * 100 / max_test)
+            print(percentage)
+            time.sleep(0.001)
+            my_bar.progress(percentage, text=progress_text)
+        
+        for result in results:
+            st.write(result)
     else:
-        st.write("Wrong files were provided")
+        st.text("Please provide the needed files.")
     
 
 
